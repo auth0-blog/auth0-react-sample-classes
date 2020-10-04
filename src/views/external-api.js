@@ -1,8 +1,47 @@
 import React from "react";
+import { withAuth0 } from "@auth0/auth0-react";
 
 class ExternalApi extends React.Component {
   state = {
     message: "",
+  };
+
+  serverUrl = process.env.REACT_APP_SERVER_URL;
+
+  callApi = async () => {
+    try {
+      const response = await fetch(
+        `${this.serverUrl}/api/messages/public-message`
+      );
+
+      const responseData = await response.json();
+
+      this.setState({ message: responseData.message });
+    } catch (error) {
+      this.setState({ message: error.message });
+    }
+  };
+
+  callSecureApi = async () => {
+    const { getAccessTokenSilently } = this.props.auth0;
+    const token = await getAccessTokenSilently();
+
+    try {
+      const response = await fetch(
+        `${this.serverUrl}/api/messages/protected-message`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const responseData = await response.json();
+
+      this.setState({ message: responseData.message });
+    } catch (error) {
+      this.setState({ message: error.message });
+    }
   };
 
   render() {
@@ -20,10 +59,18 @@ class ExternalApi extends React.Component {
           role="group"
           aria-label="External API Requests Examples"
         >
-          <button type="button" className="btn btn-primary">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={this.callApi}
+          >
             Get Public Message
           </button>
-          <button type="button" className="btn btn-primary">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={this.callSecureApi}
+          >
             Get Protected Message
           </button>
         </div>
@@ -45,4 +92,4 @@ class ExternalApi extends React.Component {
   }
 }
 
-export default ExternalApi;
+export default withAuth0(ExternalApi);

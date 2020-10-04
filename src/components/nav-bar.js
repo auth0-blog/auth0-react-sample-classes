@@ -1,6 +1,7 @@
 import React from "react";
 
 import MainNav from "./main-nav";
+import AuthNav from "./auth-nav";
 
 class NavBar extends React.Component {
   render() {
@@ -10,6 +11,7 @@ class NavBar extends React.Component {
           <div className="container">
             <div className="navbar-brand logo" />
             <MainNav />
+            <AuthNav />
           </div>
         </nav>
       </div>
